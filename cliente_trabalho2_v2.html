@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Sistema de Alunos</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f3f3f3;
+  padding: 20px;
+}
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+}
+button {
+  width: 100%;
+  padding: 12px;
+  background: #ff3030;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 5px;
+  border-radius: 8px;
+}
+button:hover {
+  background: #813800;
+}
+#listaAlunos {
+  margin-top: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+}
+.aluno {
+  background: #e9e9e9;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+  <h2>Sistema de Gerenciamento de Alunos</h2>
+
+  <input id="ra" placeholder="RA do aluno">
+  <input id="nome" placeholder="Nome completo">
+  <input id="celular" placeholder="Celular">
+  <input id="email" placeholder="Email">
+
+  <button onclick="adicionarAluno()">Adicionar Aluno</button>
+  <button style="background:#007bff" onclick="buscarAlunos()">Buscar Alunos</button>
+
+  <div id="listaAlunos"></div>
+</div>
+
+<script>
+async function buscarAlunos() {
+  const res = await fetch("http://localhost:3003/alunos");
+  const dados = await res.json();
+
+  let html = "<h3>Alunos cadastrados</h3>";
+  dados.forEach(a => {
+    html += `<div class="aluno"><b>${a.nome}</b><br>RA: ${a.ra}<br>Cel: ${a.celular}<br>Email: ${a.email}</div>`;
+  });
+
+  document.getElementById("listaAlunos").innerHTML = html;
+}
+
+async function adicionarAluno() {
+  let aluno = {
+    ra: document.getElementById("ra").value,
+    nome: document.getElementById("nome").value,
+    celular: document.getElementById("celular").value,
+    email: document.getElementById("email").value
+  };
+
+  if (!aluno.ra || !aluno.nome || !aluno.celular || !aluno.email) {
+    alert("Porfavor, preencha todos os campos!");
+    return;
+  }
+
+  await fetch("http://localhost:3003/alunos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(aluno)
+  });
+
+  alert("Aluno adicionado com sucesso!");
+  buscarAlunos();
+}
+</script>
+
+</body>
+</html>
